@@ -19,3 +19,6 @@ jobs:
         
       - name: Say hello
         run: echo "Hello, world!"
+
+      - name: Runner environment variables
+        run: printenv
