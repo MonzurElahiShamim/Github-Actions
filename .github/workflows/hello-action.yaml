@@ -11,8 +11,11 @@ jobs:
   first-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: Actions/checkout@v3
+      - name: Show system info
+        run: uname -a
+
+      - name: Show current date
+        run: date
         
       - name: Say hello
         run: echo "Hello, world!"
