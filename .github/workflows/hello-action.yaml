@@ -2,6 +2,25 @@ name: First workflow
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      message:
+        description: 'Custom message to display'
+        required: false
+        default: 'Hello from workflow dispatch!'
+        type: string
+      enable_logging:
+        description: 'Enable verbose logging'
+        required: false
+        default: false
+        type: boolean
     
   push:
     branches: 
@@ -22,6 +41,10 @@ jobs:
 
       - name: Runner environment variables
         run: printenv
+        
+      - name: Display workflow inputs
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
 
   Checkout:
     runs-on: ubuntu-latest
@@ -31,3 +54,31 @@ jobs:
 
       - name: List files
         run: ls -la
+
+  input-demo:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Display workflow inputs
+        run: |
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Custom message: ${{ inputs.message }}"
+          echo "Enable logging: ${{ inputs.enable_logging }}"
+          
+      - name: Conditional logging
+        if: inputs.enable_logging == true
+        run: |
+          echo "Verbose logging is enabled!"
+          echo "Current working directory: $(pwd)"
+          echo "Available disk space:"
+          df -h
+          
+      - name: Environment-specific actions
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "Running production deployment steps..."
+            echo "⚠️ This is production - be careful!"
+          else
+            echo "Running staging deployment steps..."
+            echo "✅ Safe to test in staging"
+          fi
