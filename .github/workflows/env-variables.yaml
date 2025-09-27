@@ -1,0 +1,48 @@
+name: Environment Variables Demo
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - main
+
+# Workflow-level environment variables (available to all jobs)
+env:
+  GLOBAL_VAR: "Available everywhere"
+  BUILD_NUMBER: ${{ github.run_number }}
+
+jobs:
+  basic-env-demo:
+    runs-on: ubuntu-latest
+    # Job-level environment variables (available to all steps in this job)
+    env:
+      JOB_VAR: "Available in this job only"
+      
+    steps:
+      - name: Show built-in GitHub variables
+        run: |
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Branch: $GITHUB_REF"
+          echo "Actor: $GITHUB_ACTOR"
+          echo "Run Number: $GITHUB_RUN_NUMBER"
+          
+      - name: Show custom variables
+        run: |
+          echo "Global variable: $GLOBAL_VAR"
+          echo "Job variable: $JOB_VAR"
+          echo "Build number: $BUILD_NUMBER"
+          
+      - name: Step-specific variables
+        env:
+          STEP_VAR: "Only available in this step"
+        run: |
+          echo "Step variable: $STEP_VAR"
+          echo "Can still access: $GLOBAL_VAR"
+          
+      - name: Set dynamic variable for next steps
+        run: |
+          echo "DYNAMIC_VAR=Created at $(date)" >> $GITHUB_ENV
+          
+      - name: Use dynamic variable
+        run: |
+          echo "Dynamic variable: $DYNAMIC_VAR"
